@@ -116,6 +116,16 @@ print:
 .done:
     ret
 
+loadSector2:
+    mov ah, 2 
+    mov al, 1
+    mov ch, 0
+    mov cl, 2
+    mov dh, 0
+    mov bx, 0x7e00
+    int 13h
+    ret
+
 enableA20:
     mov ax, 0x2401
     int 0x15
@@ -125,11 +135,12 @@ start:
     xor ax, ax
     mov ds, ax
     mov es, ax
+    mov di, 0x1000
     mov si, loadedMsg
     call print
+    call loadSector2
     call enableA20
     call SwitchToLongMode
-    jmp $
 
 loadedMsg:
     db "Hello world", 0
@@ -143,26 +154,7 @@ LongMode:
     mov fs, ax
     mov gs, ax
     mov ss, ax
-
-    ; Blank out the screen to a blue color.
-    mov edi, 0xB8000
-    mov rcx, 500                      ; Since we are clearing uint64_t over here, we put the count as Count/4.
-    mov rax, 0x1F201F201F201F20       ; Set the value to set the screen to: Blue background, white foreground, blank spaces.
-    rep stosq                         ; Clear the entire screen. 
- 
-    ; Display "Hello World!"
-    mov edi, 0x00b8000              
-    
-    mov rax, 0x1F6C1F6C1F651F48    
-    mov [edi],rax
-    
-    mov rax, 0x1F6F1F571F201F6F
-    mov [edi + 8], rax
-
-    mov rax, 0x1F211F641F6C1F72
-    mov [edi + 16], rax
-    
-    jmp $                           ; You should replace this jump to wherever you want to jump to.
+    jmp 0x7e00
 
 times 510 - ($ - $$) db 0
 dw 0xAA55
