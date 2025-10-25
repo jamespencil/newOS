@@ -16,14 +16,14 @@ $(built_stageone): src/bootl/entry.asm
 	nasm -f bin $< -o $@
 
 $(built_stagetwo): src/bootl/stageTwo.asm
-	nasm -f bin $< -o $@
+	nasm -f bin $< -o $@ -i src/bootl
 
 build/temp: 
 	mkdir -p $@
 
 
 run: build
-	qemu-system-x86_64 -hda $(build_dir)/code.img
+	qemu-system-x86_64 -device ahci,id=ahci -drive id=disk,file=$(build_dir)/code.img,if=none -device ide-hd,drive=disk,bus=ahci.0 # create ahci controller then define disk then connect disk to first SATA port
 
 clean:
 	rm -r build/
