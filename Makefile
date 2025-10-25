@@ -4,7 +4,7 @@ built_stageone = build/temp/stageone
 built_stagetwo = build/temp/stagetwo
 
 
-build: build/code.img cleanup
+build: build/code.img
 
 build/code.img: build/temp $(built_stageone) $(built_stagetwo)
 	dd if=$(built_stagetwo) of=$@ bs=512 count=2046 seek=1 conv=notrunc
@@ -20,8 +20,6 @@ $(built_stagetwo): src/bootl/stageTwo.asm
 
 build/temp: 
 	mkdir -p $@
-cleanup:
-	rm -r build/temp
 
 
 run: build
