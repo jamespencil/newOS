@@ -1,7 +1,7 @@
 .PHONY: run build clean
 build_dir = build
-built_stageone = build/temp/stageone
-built_stagetwo = build/temp/stagetwo
+built_stageone = build/temp/bootl/stageone
+built_stagetwo = build/temp/bootl/stagetwo
 
 
 build: build/code.img
@@ -14,13 +14,16 @@ build/code.img: build/temp $(built_stageone) $(built_stagetwo)
 $(built_stageone): src/bootl/entry.asm
 	nasm -f bin $< -o $@
 
-$(built_stagetwo): src/bootl/stageTwo/stageTwo.c
-	x86_64-elf-gcc -ffreestanding -nostdlib -m64 -march=x86-64 -c $< -o build/temp/stagetwo.o
-	x86_64-elf-ld -nostdlib -Ttext 0x7E00 -e kernel_main -o build/temp/stagetwo.elf build/temp/stagetwo.o
-	x86_64-elf-objcopy -O binary build/temp/stagetwo.elf $@
+$(built_stagetwo): src/bootl/stageTwo/stageTwo.c src/bootl/stageTwo/drivers/vga.c
+	x86_64-elf-gcc -ffreestanding -nostdlib -m64 -march=x86-64 -c $< -o build/temp/bootl/stagetwo.o
+	x86_64-elf-gcc -ffreestanding -nostdlib -m64 -march=x86-64 -c $(word 2,$^) -o build/temp/bootl/vga.o
+	x86_64-elf-ld -nostdlib -Ttext 0x7E00 -e kernel_main -o build/temp/bootl/stagetwo.elf build/temp/bootl/stagetwo.o build/temp/bootl/vga.o
+	x86_64-elf-objcopy -O binary build/temp/bootl/stagetwo.elf $@
 
 build/temp: 
 	mkdir -p $@
+	mkdir -p $@/bootl
+	mkdir -p $@/kernel
 
 iso: build
 	dd if=$(build_dir)/code.img of=cdos.iso bs=512
