@@ -14,10 +14,12 @@ build/code.img: build/temp $(built_stageone) $(built_stagetwo)
 $(built_stageone): src/bootl/entry.asm
 	nasm -f bin $< -o $@
 
-$(built_stagetwo): src/bootl/stageTwo/stageTwo.c src/bootl/stageTwo/drivers/vga.c
-	x86_64-elf-gcc -ffreestanding -nostdlib -m64 -march=x86-64 -c $< -o build/temp/bootl/stagetwo.o
-	x86_64-elf-gcc -ffreestanding -nostdlib -m64 -march=x86-64 -c $(word 2,$^) -o build/temp/bootl/vga.o
-	x86_64-elf-ld -nostdlib -Ttext 0x7E00 -e kernel_main -o build/temp/bootl/stagetwo.elf build/temp/bootl/stagetwo.o build/temp/bootl/vga.o
+$(built_stagetwo): src/bootl/stageTwo/*.c src/bootl/stageTwo/drivers/*.c
+	for src in $(shell find src/bootl/stageTwo -name '*.c'); do \
+		echo "Compiling $$src"; \
+		x86_64-elf-gcc -ffreestanding -nostdlib -m64 -march=x86-64 -c $$src -o build/temp/bootl/$$(basename $$src .c).o; \
+	done
+	x86_64-elf-ld -nostdlib -Ttext 0x7E00 -e kernel_main -o build/temp/bootl/stagetwo.elf build/temp/bootl/*.o
 	x86_64-elf-objcopy -O binary build/temp/bootl/stagetwo.elf $@
 
 build/temp: 
