@@ -5,12 +5,5 @@ typedef struct {
         uint16_t sector_size;               // size of sector e.g. 512, 4096
 } sataDevice;
 
-// in and out instructions
-static inline int inw(uint16_t port);
-
-
-// find sata devices
-sataDevice* sata_findDevices(void);
-
-
 void sata_read(uint64_t lba, uint32_t sectorCount, void* buffer);
+void sata_scanAllPorts(uint8_t devices[256]);
