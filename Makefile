@@ -7,7 +7,7 @@ bootl_linker	= src/bootl/stageTwo/linker.ld
 
 build: build/code.img
 
-build/code.img: build/temp $(built_stageone) $(built_stagetwo)
+build/code.img: build/temp $(built_stageone) $(built_stagetwo) $(built_kernel)
 	dd if=/dev/zero of=$@ bs=512 count=6000
 	dd if=$(built_stageone) of=$@ bs=512 count=1 conv=notrunc
 	dd if=$(built_stagetwo) of=$@ bs=512 count=2046 seek=1 conv=notrunc

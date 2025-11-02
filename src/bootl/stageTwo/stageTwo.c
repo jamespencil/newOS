@@ -1,4 +1,3 @@
-#include "stageTwo.h"
 #include "drivers/vga.h"
 #include "drivers/sata.h"
 
