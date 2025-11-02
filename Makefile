@@ -1,7 +1,8 @@
 .PHONY: run build clean
 build_dir = build
-built_stageone = build/temp/bootl/stageone
-built_stagetwo = build/temp/bootl/stagetwo
+built_stageone 	= build/temp/bootl/stageone
+built_stagetwo 	= build/temp/bootl/stagetwo
+bootl_linker	= src/bootl/stageTwo/linker.ld
 
 
 build: build/code.img
@@ -19,8 +20,7 @@ $(built_stagetwo): src/bootl/stageTwo/*.c src/bootl/stageTwo/drivers/*.c
 		echo "Compiling $$src"; \
 		x86_64-elf-gcc -ffreestanding -nostdlib -m64 -march=x86-64 -c $$src -o build/temp/bootl/$$(basename $$src .c).o; \
 	done
-	x86_64-elf-ld -nostdlib -Ttext 0x7E00 -e kernel_main -o build/temp/bootl/stagetwo.elf build/temp/bootl/*.o
-	x86_64-elf-objcopy -O binary build/temp/bootl/stagetwo.elf $@
+	x86_64-elf-ld -T $(bootl_linker) build/temp/bootl/stageTwo.o build/temp/bootl/vga.o build/temp/bootl/sata.o
 
 build/temp: 
 	mkdir -p $@

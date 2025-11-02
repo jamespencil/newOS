@@ -1,8 +1,9 @@
 #include "stageTwo.h"
 #include "drivers/vga.h"
+#include "drivers/sata.h"
 
 // kernel.c
-void kernel_main() {
+void stageTwo() {
     vga_clear();
     vga_print("Stage Two Loaded");
     while(1);
