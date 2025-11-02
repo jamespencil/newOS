@@ -1,5 +1,5 @@
 ENTRY(kernel_entry)
-OUTPUT_FORMAT("elf")
+OUTPUT_FORMAT("elf64-x86-64")
 OUTPUT("build/temp/kernel/kernel.elf")
 SECTIONS
 {
