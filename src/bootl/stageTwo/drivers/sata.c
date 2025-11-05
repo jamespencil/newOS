@@ -27,13 +27,9 @@ uint8_t isSataDrive(uint16_t bus, uint8_t device) {
 }
 
 void sata_scanAllPorts(uint8_t devices[256]) {
-    int i = 0;
-    for (uint16_t a = 0; a < 256; a++) {
-        for (uint8_t b = 0; b < 32; b++) {
-            if (isSataDrive(a, b)) {
-                devices[i] = 1;
-                i++;
-            }
+    for (uint16_t bus = 0; bus < 256; bus++) {
+        for (uint8_t device = 0; device < 32; device++) {
+            devices[bus * 32 + device] = isSataDrive(bus, device);
         }
     }
 }
